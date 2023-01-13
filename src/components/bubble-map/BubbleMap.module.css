@@ -1,0 +1,24 @@
+.land {
+  fill: #ececec;
+  stroke: none;
+}
+
+.globeOutline {
+  fill: #fbfbfb;
+  stroke: none;
+}
+
+.interiors {
+  fill: none;
+  stroke: #d9dfe0;
+}
+
+.graticules {
+  fill: none;
+  stroke: #ececec;
+}
+
+circle {
+  fill: #137B80;
+  opacity: 0.15;
+}

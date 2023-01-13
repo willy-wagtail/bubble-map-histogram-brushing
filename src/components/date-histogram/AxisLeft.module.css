@@ -1,8 +1,9 @@
 .line {
-  stroke: #C0C0BB;
+  stroke: #ececec; 
 }
 
 .text {
   fill: #635F5D;
   text-anchor: end;
+  font-size: 0.5rem;
 }

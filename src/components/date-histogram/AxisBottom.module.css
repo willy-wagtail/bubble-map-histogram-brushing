@@ -1,0 +1,11 @@
+.line {
+  /* stroke: #C0C0BB; */
+  stroke: #ececec; 
+  /* fill: none; */
+}
+
+.text {
+  font-size: 0.5rem;
+  fill: #635F5D;
+  text-anchor: middle;
+}
