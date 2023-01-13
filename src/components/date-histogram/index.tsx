@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, PropsWithChildren } from "react";
 import {
   timeFormat,
   scaleTime,
@@ -16,7 +16,6 @@ import styles from "./index.module.css";
 import Marks, { DateBinnedValue } from "./Marks";
 import AxisLeft from "./AxisLeft";
 import AxisBottom from "./AxisBottom";
-import { MissingMigrantsEvent } from "../../hooks/useMissingMigrantData";
 
 export type HistogramMargins = {
   top: number;
@@ -35,10 +34,10 @@ export type HistogramLabels = {
   y: string;
 };
 
-export type DateHistogramProps = {
-  data: MissingMigrantsEvent[];
-  dateAccessor: (data: MissingMigrantsEvent) => Date;
-  yValueAccessor: (data: MissingMigrantsEvent) => number;
+export type DateHistogramProps<Data> = {
+  data: Data[];
+  dateAccessor: (data: Data) => Date;
+  yValueAccessor: (data: Data) => number;
   width: number;
   height: number;
   margins: HistogramMargins;
@@ -48,9 +47,9 @@ export type DateHistogramProps = {
 
 const xAxisTickFormat = timeFormat("%d/%m/%y");
 
-const getDateDomain = (
-  data: MissingMigrantsEvent[],
-  dateAccessor: (data: MissingMigrantsEvent) => Date
+const getDateDomain = <Data = unknown,>(
+  data: Data[],
+  dateAccessor: (data: Data) => Date
 ): [Date, Date] => {
   const xDomain = extent(data, dateAccessor);
 
@@ -63,9 +62,9 @@ const getDateDomain = (
   return xDomain;
 };
 
-const toDateBinnedValue = (
-  bin: Bin<MissingMigrantsEvent, Date>,
-  yValueAccessor: (data: MissingMigrantsEvent) => number
+const dateBinnedValue = <Data = unknown,>(
+  bin: Bin<Data, Date>,
+  yValueAccessor: (data: Data) => number
 ): DateBinnedValue => {
   if (!(bin.x0 && bin.x1)) {
     throw new Error(
@@ -90,7 +89,7 @@ const getYDomain = (binnedData: DateBinnedValue[]): [number, number] => {
   return [0, maxValue];
 };
 
-const DateHistogram: FC<DateHistogramProps> = ({
+const DateHistogram = <Data = unknown,>({
   data,
   dateAccessor,
   yValueAccessor,
@@ -99,7 +98,7 @@ const DateHistogram: FC<DateHistogramProps> = ({
   margins,
   labelOffsets,
   labels,
-}) => {
+}: PropsWithChildren<DateHistogramProps<Data>>) => {
   const innerHeight = height - margins.top - margins.bottom;
   const innerWidth = width - margins.left - margins.right;
 
@@ -110,11 +109,11 @@ const DateHistogram: FC<DateHistogramProps> = ({
     .range([0, innerWidth])
     .nice();
 
-  const binnedData: DateBinnedValue[] = bin<MissingMigrantsEvent, Date>()
+  const binnedData: DateBinnedValue[] = bin<Data, Date>()
     .value(dateAccessor)
     .domain(dateDomain)
     .thresholds(timeMonths(...dateDomain))(data)
-    .map((bin) => toDateBinnedValue(bin, yValueAccessor));
+    .map((bin) => dateBinnedValue(bin, yValueAccessor));
 
   const yScale = scaleLinear()
     .domain(getYDomain(binnedData))
