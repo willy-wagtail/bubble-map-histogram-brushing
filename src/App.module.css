@@ -4,3 +4,9 @@
     align-items: center;
     height: 100%;
   }
+
+  .pre {
+    font-size: 2rem;
+    text-align: center;
+    margin: 50vh 0;
+  }

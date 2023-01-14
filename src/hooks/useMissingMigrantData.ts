@@ -40,8 +40,8 @@ const transform = (d: MissingMigrantsCsvRow): MissingMigrantsEvent => {
   return {
     date: new Date(d["Website Date"]),
     totalDeadOrMissing: +d["Total Number of Dead and Missing"],
-    latitude: +splitCoordinates[0],
-    longitude: +splitCoordinates[1],
+    longitude: +splitCoordinates[0],
+    latitude: +splitCoordinates[1],
   };
 };
 

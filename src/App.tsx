@@ -1,64 +1,65 @@
 import React, { FC } from "react";
 
 import styles from "./App.module.css";
-import BubbleMap from "./components/bubble-map/BubbleMap";
-import DateHistogram, {
-  DateHistogramProps,
-  HistogramLabelOffsets,
-  HistogramLabels,
-  HistogramMargins,
-} from "./components/date-histogram";
+import BubbleMap from "./components/bubble-map";
+import DateHistogram, { DateHistogramProps } from "./components/date-histogram";
 import {
   MissingMigrantsEvent,
   useMissingMigrantsData,
 } from "./hooks/useMissingMigrantData";
 import { useWorldAtlas } from "./hooks/useWorldAtlas";
-import { useWorldCities } from "./hooks/useWorldCities";
 
-const width = 960;
-const height = 500;
-const histogramHeight = height * 0.2;
+const WIDTH = 960;
+const HEIGHT = 900;
+const HISTOGRAM_HEIGHT = HEIGHT * 0.4;
+
+const valueAccessor = (d: MissingMigrantsEvent) => d.totalDeadOrMissing;
 
 const dateHistogramProps = (
   data: MissingMigrantsEvent[]
 ): DateHistogramProps<MissingMigrantsEvent> => ({
   data,
-  width,
-  height: histogramHeight,
+  width: WIDTH,
+  height: HISTOGRAM_HEIGHT,
   margins: {
     top: 0,
     right: 30,
-    bottom: 20,
-    left: 45,
+    bottom: 50,
+    left: 50,
   },
   labels: {
-    x: "Time",
+    x: "Month",
     y: "Dead or Missing",
   },
   labelOffsets: {
-    x: 54,
-    y: 30,
+    x: 35,
+    y: 40,
   },
   dateAccessor: (d) => d.date,
-  yValueAccessor: (d) => d.totalDeadOrMissing,
+  yValueAccessor: valueAccessor,
 });
 
 const App: FC = () => {
   const missingMigrantsEvents = useMissingMigrantsData();
   const worldAtlas = useWorldAtlas();
-  const cities = useWorldCities();
 
-  if (!missingMigrantsEvents || !worldAtlas || !cities) {
-    return <pre>Loading...</pre>;
+  if (!missingMigrantsEvents || !worldAtlas) {
+    return <pre className={styles.pre}>Loading...</pre>;
   }
 
   return (
     <div className={styles.charts}>
-      <svg width={width} height={height}>
-        <BubbleMap worldAtlas={worldAtlas} cities={cities} />
+      <svg width={WIDTH} height={HEIGHT}>
+        <BubbleMap<MissingMigrantsEvent>
+          data={missingMigrantsEvents}
+          valueAccessor={valueAccessor}
+          worldAtlas={worldAtlas}
+        />
 
-        <g transform={`translate(0 , ${height - histogramHeight})`}>
-          <DateHistogram {...dateHistogramProps(missingMigrantsEvents)} />
+        <g transform={`translate(0 , ${HEIGHT - HISTOGRAM_HEIGHT})`}>
+          <DateHistogram<MissingMigrantsEvent>
+            {...dateHistogramProps(missingMigrantsEvents)}
+          />
         </g>
       </svg>
     </div>

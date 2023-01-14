@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import {
   timeFormat,
   scaleTime,
@@ -47,21 +47,27 @@ export type DateHistogramProps<Data> = {
 
 const xAxisTickFormat = timeFormat("%d/%m/%y");
 
+/**
+ * Gets the start and end dates for the x-axis of the date histogram
+ */
 const getDateDomain = <Data = unknown,>(
   data: Data[],
   dateAccessor: (data: Data) => Date
 ): [Date, Date] => {
-  const xDomain = extent(data, dateAccessor);
+  const domain = extent(data, dateAccessor);
 
-  if (!(xDomain[0] || xDomain[1])) {
+  if (!(domain[0] || domain[1])) {
     throw new Error(
       "There was an issue getting min and max values for the x-axis."
     );
   }
 
-  return xDomain;
+  return domain;
 };
 
+/**
+ * Computes a data structure containing one value for each histogram bin.
+ */
 const dateBinnedValue = <Data = unknown,>(
   bin: Bin<Data, Date>,
   yValueAccessor: (data: Data) => number
