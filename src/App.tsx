@@ -54,6 +54,10 @@ const App: FC = () => {
           data={missingMigrantsEvents}
           valueAccessor={valueAccessor}
           worldAtlas={worldAtlas}
+          fallbackMaxDataValue={50000000}
+          maxBubbleRadius={20}
+          longitude={(d) => d.longitude}
+          latitude={(d) => d.latitude}
         />
 
         <g transform={`translate(0 , ${HEIGHT - HISTOGRAM_HEIGHT})`}>
