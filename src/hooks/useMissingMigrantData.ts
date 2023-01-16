@@ -37,6 +37,13 @@ const missingMigrantsDataUrl =
 const transform = (d: MissingMigrantsCsvRow): MissingMigrantsEvent => {
   const splitCoordinates = d.Coordinates.split(" ");
 
+  if (
+    Number.isNaN(+splitCoordinates[0]) ||
+    Number.isNaN(+splitCoordinates[1])
+  ) {
+    console.log(d);
+  }
+
   return {
     date: new Date(d["Website Date"]),
     totalDeadOrMissing: +d["Total Number of Dead and Missing"],
@@ -55,7 +62,11 @@ export const useMissingMigrantsData = () => {
           throw new Error("Typeguard failed");
         }
 
-        setData(rows.map((row: MissingMigrantsCsvRow) => transform(row)));
+        setData(
+          rows
+            .filter((row: MissingMigrantsCsvRow) => row.Coordinates !== "") // Some of the data in 2014 had no coordinates
+            .map((row: MissingMigrantsCsvRow) => transform(row))
+        );
       })
       .catch((err) => {
         console.error(err);

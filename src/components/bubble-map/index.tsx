@@ -107,7 +107,6 @@ const Bubbles = <Data = unknown,>({
 /**
  * BubbleMap
  */
-
 export type BubbleMapProps<Data> = {
   worldAtlas: WorldAtlasData;
   data: Data[];

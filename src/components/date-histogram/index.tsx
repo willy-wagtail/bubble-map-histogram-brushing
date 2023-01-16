@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useRef } from "react";
 import {
   timeFormat,
   scaleTime,
@@ -125,6 +125,10 @@ const DateHistogram = <Data = unknown,>({
     .domain(getYDomain(binnedData))
     .range([innerHeight, 0]);
 
+  const brushRef = useRef<SVGGElement>(null);
+
+  console.log(brushRef.current);
+
   return (
     <>
       <rect
@@ -168,6 +172,8 @@ const DateHistogram = <Data = unknown,>({
           yScale={yScale}
           innerHeight={innerHeight}
         />
+
+        <g ref={brushRef}></g>
       </g>
     </>
   );

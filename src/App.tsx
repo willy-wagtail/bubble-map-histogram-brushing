@@ -77,25 +77,23 @@ const App: FC = () => {
         </p>
       </header>
 
-      <main>
-        <svg width={WIDTH} height={HEIGHT}>
-          <BubbleMap<MissingMigrantsEvent>
-            data={missingMigrantsEvents}
-            valueAccessor={valueAccessor}
-            worldAtlas={worldAtlas}
-            fallbackMaxDataValue={50000000}
-            maxBubbleRadius={20}
-            longitude={(d) => d.longitude}
-            latitude={(d) => d.latitude}
-          />
+      <svg width={WIDTH} height={HEIGHT}>
+        <BubbleMap<MissingMigrantsEvent>
+          data={missingMigrantsEvents}
+          valueAccessor={valueAccessor}
+          worldAtlas={worldAtlas}
+          fallbackMaxDataValue={50000000}
+          maxBubbleRadius={20}
+          longitude={(d) => d.longitude}
+          latitude={(d) => d.latitude}
+        />
 
-          <g transform={`translate(0 , ${HEIGHT - HISTOGRAM_HEIGHT})`}>
-            <DateHistogram<MissingMigrantsEvent>
-              {...dateHistogramProps(missingMigrantsEvents)}
-            />
-          </g>
-        </svg>
-      </main>
+        <g transform={`translate(0 , ${HEIGHT - HISTOGRAM_HEIGHT})`}>
+          <DateHistogram<MissingMigrantsEvent>
+            {...dateHistogramProps(missingMigrantsEvents)}
+          />
+        </g>
+      </svg>
     </div>
   );
 };
