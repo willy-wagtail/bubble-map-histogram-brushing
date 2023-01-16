@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useRef } from "react";
+import React, { PropsWithChildren, useEffect, useMemo, useRef } from "react";
 import {
   timeFormat,
   scaleTime,
@@ -9,6 +9,9 @@ import {
   sum,
   max,
   Bin,
+  brushX,
+  select,
+  D3BrushEvent,
 } from "d3";
 
 import styles from "./index.module.css";
@@ -43,6 +46,7 @@ export type DateHistogramProps<Data> = {
   margins: HistogramMargins;
   labelOffsets: HistogramLabelOffsets;
   labels: HistogramLabels;
+  setBrushExtent: (d: [Date, Date] | null) => void;
 };
 
 const xAxisTickFormat = timeFormat("%b '%y"); //timeFormat("%d/%m/%y");
@@ -95,6 +99,9 @@ const getYDomain = (binnedData: DateBinnedValue[]): [number, number] => {
   return [0, maxValue];
 };
 
+const isDateDateTuple = (dates: Date[]): dates is [Date, Date] =>
+  dates.length === 2 && dates[0] instanceof Date && dates[1] instanceof Date;
+
 const DateHistogram = <Data = unknown,>({
   data,
   dateAccessor,
@@ -104,30 +111,69 @@ const DateHistogram = <Data = unknown,>({
   margins,
   labelOffsets,
   labels,
+  setBrushExtent,
 }: PropsWithChildren<DateHistogramProps<Data>>) => {
   const innerHeight = height - margins.top - margins.bottom;
   const innerWidth = width - margins.left - margins.right;
 
-  const dateDomain = getDateDomain(data, dateAccessor);
+  const dateDomain = useMemo(
+    () => getDateDomain(data, dateAccessor),
+    [data, dateAccessor]
+  );
 
-  const dateScale = scaleTime()
-    .domain(dateDomain)
-    .range([0, innerWidth])
-    .nice();
+  const dateScale = useMemo(() => {
+    return scaleTime().domain(dateDomain).range([0, innerWidth]).nice();
+  }, [dateDomain]);
 
-  const binnedData: DateBinnedValue[] = bin<Data, Date>()
-    .value(dateAccessor)
-    .domain(dateDomain)
-    .thresholds(timeMonths(...dateDomain))(data)
-    .map((bin) => dateBinnedValue(bin, yValueAccessor));
+  const binnedData: DateBinnedValue[] = useMemo(
+    () =>
+      bin<Data, Date>()
+        .value(dateAccessor)
+        .domain(dateDomain)
+        .thresholds(timeMonths(...dateDomain))(data)
+        .map((bin) => dateBinnedValue(bin, yValueAccessor)),
+    [dateAccessor, dateDomain, yValueAccessor, data]
+  );
 
-  const yScale = scaleLinear()
-    .domain(getYDomain(binnedData))
-    .range([innerHeight, 0]);
+  const yScale = useMemo(
+    () => scaleLinear().domain(getYDomain(binnedData)).range([innerHeight, 0]),
+    [innerHeight, binnedData]
+  );
 
   const brushRef = useRef<SVGGElement>(null);
 
-  console.log(brushRef.current);
+  useEffect(() => {
+    const brush = brushX().extent([
+      [0, 0],
+      [innerWidth, innerHeight],
+    ]);
+
+    if (brushRef.current !== null) {
+      brush(select(brushRef.current));
+
+      brush.on("brush end", (event: D3BrushEvent<unknown>) => {
+        if (event.selection !== null) {
+          let dates = event.selection.map((val) => {
+            if (typeof val === "number") {
+              return dateScale.invert(val);
+            } else {
+              throw new Error("Error while converting brushing event to Date");
+            }
+          });
+
+          if (isDateDateTuple(dates)) {
+            setBrushExtent(dates);
+          } else {
+            throw new Error(
+              "Typeguard error when converting brushing event.selection to [Date, Date]."
+            );
+          }
+        } else {
+          setBrushExtent(null);
+        }
+      });
+    }
+  }, [innerWidth, innerHeight]);
 
   return (
     <>

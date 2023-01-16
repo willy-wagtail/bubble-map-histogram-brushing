@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 
 import styles from "./App.module.css";
 import BubbleMap from "./components/bubble-map";
@@ -16,9 +16,11 @@ const HISTOGRAM_HEIGHT = HEIGHT * 0.3;
 const valueAccessor = (d: MissingMigrantsEvent) => d.totalDeadOrMissing;
 
 const dateHistogramProps = (
-  data: MissingMigrantsEvent[]
+  data: MissingMigrantsEvent[],
+  setBrushExtent: (d: [Date, Date] | null) => void
 ): DateHistogramProps<MissingMigrantsEvent> => ({
   data,
+  setBrushExtent,
   width: WIDTH,
   height: HISTOGRAM_HEIGHT,
   margins: {
@@ -40,19 +42,26 @@ const dateHistogramProps = (
 });
 
 const App: FC = () => {
-  const missingMigrantsEvents = useMissingMigrantsData();
   const worldAtlas = useWorldAtlas();
+  const missingMigrantsEvents = useMissingMigrantsData();
+
+  const [dateFilter, setDateFilter] = useState<[Date, Date] | null>(null);
 
   if (!missingMigrantsEvents || !worldAtlas) {
     return <pre className={styles.pre}>Loading...</pre>;
   }
 
+  const filteredData = dateFilter
+    ? missingMigrantsEvents.filter((d) => {
+        const date = d.date;
+        return date > dateFilter[0] && date < dateFilter[1];
+      })
+    : missingMigrantsEvents;
+
   return (
     <div className={styles.charts}>
       <header className={styles.header}>
-        <h1 className={styles.heading}>
-          People who have died or gone missing while migrating.
-        </h1>
+        <h1 className={styles.heading}>Missing Migrants Data</h1>
 
         <p>
           The source dataset contains a list of migration events that resulted
@@ -64,22 +73,24 @@ const App: FC = () => {
         </p>
 
         <p>
-          The bubble map visualises migration events and their geographical
-          location. Each bubble represents one migration event and the radius of
-          the bubble is proportional to the number of people missing or dead for
-          that one event. The areas with the deepest colours are the areas with
-          the most migration events.
+          The bubble map visualises migration events that had someone die or go
+          missing and their geographical locations. Each bubble represents one
+          migration event and the radius of the bubble is proportional to the
+          number of people missing or dead for that one event. The areas with
+          the deepest colours are the areas with the most migration events that
+          had someone die or go missing.
         </p>
 
         <p>
           The historgram shows the total number of people missing or dead during
-          migrations aggregated by month.
+          migrations aggregated by month. Brush the histogram to select a date
+          range.
         </p>
       </header>
 
       <svg width={WIDTH} height={HEIGHT}>
         <BubbleMap<MissingMigrantsEvent>
-          data={missingMigrantsEvents}
+          data={filteredData}
           valueAccessor={valueAccessor}
           worldAtlas={worldAtlas}
           fallbackMaxDataValue={50000000}
@@ -90,7 +101,7 @@ const App: FC = () => {
 
         <g transform={`translate(0 , ${HEIGHT - HISTOGRAM_HEIGHT})`}>
           <DateHistogram<MissingMigrantsEvent>
-            {...dateHistogramProps(missingMigrantsEvents)}
+            {...dateHistogramProps(missingMigrantsEvents, setDateFilter)}
           />
         </g>
       </svg>

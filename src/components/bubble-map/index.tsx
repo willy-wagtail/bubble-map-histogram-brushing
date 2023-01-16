@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from "react";
+import React, { FC, PropsWithChildren, useMemo } from "react";
 
 import {
   geoNaturalEarth1,
@@ -126,13 +126,22 @@ const BubbleMap = <Data = unknown,>({
   maxBubbleRadius,
   fallbackMaxDataValue,
 }: PropsWithChildren<BubbleMapProps<Data>>) => {
-  const bubbleSizeScale = scaleSqrt()
-    .domain([0, max(data, valueAccessor) || fallbackMaxDataValue])
-    .range([0, maxBubbleRadius]);
+  const bubbleSizeScale = useMemo(
+    () =>
+      scaleSqrt()
+        .domain([0, max(data, valueAccessor) || fallbackMaxDataValue])
+        .range([0, maxBubbleRadius]),
+    [data, valueAccessor, fallbackMaxDataValue, maxBubbleRadius]
+  );
 
   return (
     <g>
-      <WorldMap {...worldAtlas} />
+      {useMemo(
+        () => (
+          <WorldMap {...worldAtlas} />
+        ),
+        [worldAtlas]
+      )}
 
       <Bubbles<Data>
         data={data}
