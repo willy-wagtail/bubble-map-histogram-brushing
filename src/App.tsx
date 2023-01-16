@@ -10,8 +10,8 @@ import {
 import { useWorldAtlas } from "./hooks/useWorldAtlas";
 
 const WIDTH = 960;
-const HEIGHT = 900;
-const HISTOGRAM_HEIGHT = HEIGHT * 0.4;
+const HEIGHT = 780;
+const HISTOGRAM_HEIGHT = HEIGHT * 0.3;
 
 const valueAccessor = (d: MissingMigrantsEvent) => d.totalDeadOrMissing;
 
@@ -49,23 +49,53 @@ const App: FC = () => {
 
   return (
     <div className={styles.charts}>
-      <svg width={WIDTH} height={HEIGHT}>
-        <BubbleMap<MissingMigrantsEvent>
-          data={missingMigrantsEvents}
-          valueAccessor={valueAccessor}
-          worldAtlas={worldAtlas}
-          fallbackMaxDataValue={50000000}
-          maxBubbleRadius={20}
-          longitude={(d) => d.longitude}
-          latitude={(d) => d.latitude}
-        />
+      <header className={styles.header}>
+        <h1 className={styles.heading}>
+          People who have died or gone missing while migrating.
+        </h1>
 
-        <g transform={`translate(0 , ${HEIGHT - HISTOGRAM_HEIGHT})`}>
-          <DateHistogram<MissingMigrantsEvent>
-            {...dateHistogramProps(missingMigrantsEvents)}
+        <p>
+          The source dataset contains a list of migration events that resulted
+          in missing or loss of human life and was sourced from the{" "}
+          <a href="https://missingmigrants.iom.int">
+            Missing Migrant Project's dataset
+          </a>{" "}
+          on 9th January 2023.
+        </p>
+
+        <p>
+          The bubble map visualises the total number of people missing or dead
+          during those migration events. Each bubble represents one migration
+          event: the radius of the bubble is proportional to the number of
+          people missing or dead for that one event. The areas with deeper
+          colour are the areas with the most migration events.
+        </p>
+
+        <p>
+          The historgram shows the total number of people missing or dead during
+          migrations aggregated by month.
+        </p>
+      </header>
+
+      <main>
+        <svg width={WIDTH} height={HEIGHT}>
+          <BubbleMap<MissingMigrantsEvent>
+            data={missingMigrantsEvents}
+            valueAccessor={valueAccessor}
+            worldAtlas={worldAtlas}
+            fallbackMaxDataValue={50000000}
+            maxBubbleRadius={20}
+            longitude={(d) => d.longitude}
+            latitude={(d) => d.latitude}
           />
-        </g>
-      </svg>
+
+          <g transform={`translate(0 , ${HEIGHT - HISTOGRAM_HEIGHT})`}>
+            <DateHistogram<MissingMigrantsEvent>
+              {...dateHistogramProps(missingMigrantsEvents)}
+            />
+          </g>
+        </svg>
+      </main>
     </div>
   );
 };

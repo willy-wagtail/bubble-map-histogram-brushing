@@ -45,7 +45,7 @@ export type DateHistogramProps<Data> = {
   labels: HistogramLabels;
 };
 
-const xAxisTickFormat = timeFormat("%d/%m/%y");
+const xAxisTickFormat = timeFormat("%b '%y"); //timeFormat("%d/%m/%y");
 
 /**
  * Gets the start and end dates for the x-axis of the date histogram
@@ -127,7 +127,11 @@ const DateHistogram = <Data = unknown,>({
 
   return (
     <>
-      <rect width={width} height={height} fill="white" />
+      <rect
+        width={width + margins.left + margins.right}
+        height={height + margins.top + margins.left}
+        fill="white"
+      />
 
       <g transform={`translate(${margins.left}, ${margins.top})`}>
         <AxisLeft yScale={yScale} innerWidth={innerWidth} tickOffset={5} />
