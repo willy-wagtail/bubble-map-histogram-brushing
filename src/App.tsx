@@ -58,17 +58,17 @@ const App: FC = () => {
           The source dataset contains a list of migration events that resulted
           in missing or loss of human life and was sourced from the{" "}
           <a href="https://missingmigrants.iom.int">
-            Missing Migrant Project's dataset
+            Missing Migrant Project dataset
           </a>{" "}
           on 9th January 2023.
         </p>
 
         <p>
-          The bubble map visualises the total number of people missing or dead
-          during those migration events. Each bubble represents one migration
-          event: the radius of the bubble is proportional to the number of
-          people missing or dead for that one event. The areas with deeper
-          colour are the areas with the most migration events.
+          The bubble map visualises migration events and their geographical
+          location. Each bubble represents one migration event and the radius of
+          the bubble is proportional to the number of people missing or dead for
+          that one event. The areas with the deepest colours are the areas with
+          the most migration events.
         </p>
 
         <p>
