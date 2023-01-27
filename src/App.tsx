@@ -60,7 +60,7 @@ const App: FC = () => {
 
   return (
     <div className={styles.charts}>
-      <header className={styles.header}>
+      {/* <header className={styles.header}>
         <h1 className={styles.heading}>Missing Migrants Data</h1>
 
         <p>
@@ -86,7 +86,7 @@ const App: FC = () => {
           migrations aggregated by month. Brush the histogram to select a date
           range.
         </p>
-      </header>
+      </header> */}
 
       <svg width={WIDTH} height={HEIGHT}>
         <BubbleMap<MissingMigrantsEvent>
