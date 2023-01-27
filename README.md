@@ -1,6 +1,6 @@
 # Bubble map with histogram brushing
 
-This repo contains a data visualisation of migration events that resulted in missing or loss of human life. The data was sourced from the [Missing Migrant Project](https://missingmigrants.iom.int)on 9th January 2023.
+This repo contains a data visualisation of migration events that resulted in missing or loss of human life. The data was sourced from the [Missing Migrant Project](https://missingmigrants.iom.int) on 9th January 2023.
 
 The bubble map visualises migration events that had someone die or go missing and their geographical locations. Each bubble represents one migration event and the radius of the bubble is proportional to the number of people missing or dead for that one event. The areas with the deepest colours are the areas with the most migration events that had someone die or go missing.
 
